@@ -3,17 +3,17 @@ from PyQt5 import uic
 from PyQt5.QtWidgets import QApplication, QInputDialog, QMainWindow,  QLineEdit
 from PyQt5.QtCore import Qt
 
-
 class Diary(QMainWindow):
     def __init__(self):
         self.first_num = 0
         super().__init__()
-        uic.loadUi('diary.ui', self)
+        uic.loadUi('proyekt.ui', self)
         self.addAll.clicked.connect(self.AddItem)
         self.events.itemClicked.connect(self.dialog)
 
-    def keyPressEvent(self, eWent):
-        if eWent.key() == Qt.Key_F:
+    def keyPressEvent(self, event):
+        key = event.key()
+        if key == Qt.Key_Enter:
             self.AddItem()
 
     def dialog(self):
@@ -21,14 +21,16 @@ class Diary(QMainWindow):
             self,
             "",
             "Выбирерите дейстивие",
-            ("Удалить", "Изменить"),
+            ("Удалить", "Изменить","Очистить все"),
             0,
             False
         )
         if i == 'Удалить' and okBtnPressed == True:
-            self.onemore()
+            self.remove_item()
         if i == 'Изменить' and okBtnPressed == True:
             self.edit_item()
+        if i == 'Очистить все' and okBtnPressed == True:
+            self.delet_all()
 
     def edit_item(self):
         row = self.events.currentRow()
@@ -46,9 +48,12 @@ class Diary(QMainWindow):
         ewent_l = [ewent, date, time]
         self.events.addItem(' '.join(ewent_l))
 
-    def onemore(self):
+    def remove_item(self):
         row = self.events.currentRow()
         self.events.takeItem(row)
+
+    def delet_all(self):
+        self.events.clear()
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
