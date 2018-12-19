@@ -7,7 +7,11 @@ class Diary(QMainWindow):
     def __init__(self):
         self.first_num = 0
         super().__init__()
-        uic.loadUi('proyekt.ui', self)
+        uic.loadUi('diary.ui', self)
+        file = open('diary.txt', mode='r', encoding='utf8')
+        for string in file.readlines():
+            self.events.addItem(string.strip())
+        file.close()
         self.addAll.clicked.connect(self.AddItem)
         self.events.itemClicked.connect(self.dialog)
 
@@ -39,6 +43,12 @@ class Diary(QMainWindow):
             text, ok_button =   QInputDialog.getText(self, '', '', QLineEdit.Normal, item.text())
             if text and ok_button is not None:
                 item.setText(text)
+        file = open('diary.txt', mode='w', encoding='utf8')
+        for i in range(self.events.count()):
+            item = self.events.item(i).text()
+            file.write(item+'\n')
+        file.close()
+
 
     def AddItem(self):
         date = self.date.selectedDate()
@@ -47,13 +57,23 @@ class Diary(QMainWindow):
         ewent = self.eventName.text()
         ewent_l = [ewent, date, time]
         self.events.addItem(' '.join(ewent_l))
+        file = open('diary.txt', mode='a', encoding='utf8')
+        file.write(' '.join(ewent_l)+'\n')
+        file.close()
 
     def remove_item(self):
         row = self.events.currentRow()
         self.events.takeItem(row)
+        file = open('diary.txt', mode='w', encoding='utf8')
+        for i in range(self.events.count()):
+            item = self.events.item(i).text()
+            file.write(item + '\n')
+        file.close()
 
     def delet_all(self):
         self.events.clear()
+        file = open('diary.txt', mode='w', encoding='utf8')
+        file.close()
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
